@@ -120,7 +120,7 @@ podman rm -f tablotv-node-server || true
 # Build image
 podman build -t tablotv-node-server .
 
-# Define default location to store recordings on your local device (using $HOME for safe shell expansion)
+# Define default location to store recordings on your local device
 # CHANGE THIS TO CHOOSE A DIFFERENT LOCATION FOR YOUR RECORDINGS TO BE SAVED TO
 LOCAL_MACHINE_RECORDINGS_DIR="$HOME/tablotv_recordings"
 mkdir -p "$LOCAL_MACHINE_RECORDINGS_DIR" # Create recordings folder safely if it doesn't exist
@@ -131,7 +131,8 @@ podman run -d \
   --name tablotv-node-server \
   -p 3400:3400 \
   -v "$LOCAL_MACHINE_RECORDINGS_DIR":/app/recordings:Z,U \
-  -v "$LOCAL_MACHINE_RECORDINGS_DIR"/data:/app/data:Z,U \
+  -v "$LOCAL_MACHINE_RECORDINGS_DIR/data":/app/data:Z,U \
+  -v "$PWD"/.env:/app/.env:Z,ro \
   tablotv-node-server
 ```
 
