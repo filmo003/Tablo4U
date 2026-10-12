@@ -108,6 +108,47 @@ first run (or set `ADMIN_PASSWORD` to choose your own).
 npm run mock                # sample guide + a test-pattern you can "watch"
 ```
 
+## Run from container (experimental)
+
+For use running in podman rather than bare metal.
+This is experimental and some features may not work properly.
+
+```bash
+# Remove any existing container, move on without errors if container doesn't exist
+podman rm -f tablotv-node-server || true
+
+# Build image
+podman build -t tablotv-node-server .
+
+# Define default location to store recordings on your local device (using $HOME for safe shell expansion)
+# CHANGE THIS TO CHOOSE A DIFFERENT LOCATION FOR YOUR RECORDINGS TO BE SAVED TO
+LOCAL_MACHINE_RECORDINGS_DIR="$HOME/tablotv_recordings"
+mkdir -p "$LOCAL_MACHINE_RECORDINGS_DIR" # Create folder safely if it doesn't exist
+
+# Run the container and mount a local volume to persist recordings
+podman run -d \
+  --name tablotv-node-server \
+  -p 3400:3400 \
+  -v "$LOCAL_MACHINE_RECORDINGS_DIR":/app/recordings:Z \
+  tablotv-node-server
+```
+
+To see container logs:
+
+```bash
+podman logs -f tablotv-node-server
+```
+
+If recordings record to the container, but not are not showing up in the local file system, you may need to run the following to ensure that podman can write to your local folder.
+
+```bash
+sudo chmod o+w "$LOCAL_MACHINE_RECORDINGS_DIR"
+```
+
+### Container deployment known limitations
+
+- While recordings will persist in the local volume after removing the container, the web app will not "see" the old recordings. New recordings can be created and played back directly in browser and will continue to be added to the local volume.
+
 ## Configuration (`.env`)
 
 | Variable | Default | Description |
