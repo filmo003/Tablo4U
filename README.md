@@ -126,6 +126,12 @@ LOCAL_MACHINE_RECORDINGS_DIR="$HOME/tablotv_recordings"
 mkdir -p "$LOCAL_MACHINE_RECORDINGS_DIR" # Create recordings folder safely if it doesn't exist
 mkdir -p "$LOCAL_MACHINE_RECORDINGS_DIR/data" # Create data folder to persist app data when creating new containers
 
+# If .env file doesn't exist, copy over from example
+if [ ! -f .env ]; then
+  cp .env.example .env
+  echo "Edit .env to add TABLO_EMAIL and TABLO_PASSWORD before starting the container."
+fi
+
 # Run the container and mount a local volume to persist recordings
 podman run -d \
   --name tablotv-node-server \
